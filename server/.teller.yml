@@ -1,0 +1,30 @@
+
+project: server
+
+# Set this if you want to carry over parent process' environment variables
+# carry_env: true 
+
+
+#
+# Variables
+#
+# Feel free to add options here to be used as a variable throughout
+# paths.
+#
+opts:
+  region: env:AWS_REGION    # you can get env variables with the 'env:' prefix
+  stage: development
+
+
+#
+# Providers
+#
+providers:
+  # you can mix and match many files
+  dotenv:
+    # env_sync:
+    #   path: ./.env
+    env:
+      RECAPTCHA_SECRET_KEY:
+        path: ./.env
+
