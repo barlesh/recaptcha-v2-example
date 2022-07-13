@@ -1,6 +1,10 @@
 # recaptcha-v2-example
 a simple server client implementation of reCAPTCHA V2
 
+## ReCAPTCHA V2
+Create a developer account in Google, and create a reCAPTCHA V2 site key and secret key.
+
+
 ## server
 cd into the server dir `cd server`
 install dependencies `yarn`

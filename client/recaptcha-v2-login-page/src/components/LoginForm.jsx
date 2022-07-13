@@ -14,19 +14,19 @@ const LoginForm = () => {
         setUsername(e.target.value);
     }
 
-    const handleSubmit = async (e) => {
-        if (!isUserNameValid(username)) {
+    const submit = async (value, recaptchaToken, loginEndpoint = '/login') => {
+        if (!isUserNameValid(value)) {
             alert('Username is not valid');
             return;
         }
-        e.preventDefault();
+
         try {
-            const res = await fetch(`/login`, {
+            const res = await fetch(`/${loginEndpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username: username, recaptcha: reCAPTCHA })
+                body: JSON.stringify({ username: value, recaptcha: recaptchaToken })
             })
 
 
@@ -38,6 +38,20 @@ const LoginForm = () => {
         }
     }
 
+    const handleSubmitFailedCaptchaToken = async() => {
+        const damagedReCAPTCHAToken = `${reCAPTCHA}nonvalidtoken`
+        return submit(username, damagedReCAPTCHAToken);
+    }
+
+    const handleSubmitFailedCaptchaSecret = async() => {
+        return submit(username, reCAPTCHA, 'login-bad-token');
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        return submit(username, reCAPTCHA)
+    }
+
     function handleCaptcha(value) {
         setReCAPTCHA(value);
     }
@@ -45,19 +59,27 @@ const LoginForm = () => {
     return (
         <div>
             <form onSubmit={handleSubmit}>
-            <label>
-                Name:
-                <input type="text" value={username} onChange={handleChange} />
-            </label>
-            {isUserNameValid(username) && <ReCAPTCHA
-                    sitekey={captchaSiteKey}
-                    onChange={handleCaptcha}
-                />
-            }
-            <input type="submit" value="Submit" />
+                <div style={{margin: "10px"}}>
+                    <label>
+                        Name:
+                        <input type="text" value={username} onChange={handleChange} />
+                    </label>
+                </div>
+                <div style={{display: "flex", "align-items": "center", "justify-content": "center"}}>
+                    {isUserNameValid(username) && <ReCAPTCHA
+                        sitekey={captchaSiteKey}
+                        onChange={handleCaptcha}
+                        />
+                    }
+                </div>
+                <div style={{margin: "20px"}}>
+                    <input type="submit" value="Submit" />
+                </div>
             </form>
+            <button onClick={() => handleSubmitFailedCaptchaToken()}>Submit with failed reCAPTCHA</button>
+            <button onClick={() => handleSubmitFailedCaptchaSecret()}>Submit with wrong reCAPTCHA token</button>
             {isVerified !== undefined && (<h1>{isVerified ? 'Human :)' : 'Machine :('}</h1>)}
-            </div>
+        </div>
       );
 }
 

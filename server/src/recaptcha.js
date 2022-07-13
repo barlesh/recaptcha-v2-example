@@ -1,12 +1,6 @@
 import fetch from 'node-fetch'
 
-const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-if (!secretKey) {
-    console.error('No secret key provided');
-    process.exit(1);
-}
-
-export const verifyReCAPTCHA = async (recaptcha) => {
+export const verifyReCAPTCHA = async (recaptcha, secretKey) => {
 
     const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
     const body = `secret=${secretKey}&response=${recaptcha}`
