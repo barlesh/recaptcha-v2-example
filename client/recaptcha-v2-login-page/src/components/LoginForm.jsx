@@ -42,15 +42,6 @@ const LoginForm = () => {
         }
     }
 
-    const handleSubmitFailedCaptchaToken = async() => {
-        const damagedReCAPTCHAToken = reCAPTCHA.replace(/[a-zA-Z]/g, 'j').replace(/[0-9]/g, 4);
-        return submit(username, damagedReCAPTCHAToken);
-    }
-
-    const handleSubmitFailedCaptchaSecret = async() => {
-        return submit(username, reCAPTCHA, 'login-bad-secret-key');
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         return submit(username, reCAPTCHA)
@@ -80,8 +71,6 @@ const LoginForm = () => {
                     <input type="submit" value="Submit" />
                 </div>
             </form>
-            <button onClick={() => handleSubmitFailedCaptchaToken()}>Submit with failed reCAPTCHA (client)</button>
-            <button onClick={() => handleSubmitFailedCaptchaSecret()}>Submit to wrong recpatcha secret</button>
             {isVerified !== undefined && (<h1>{isVerified ? 'Human :)' : 'Machine :('}</h1>)}
         </div>
       );

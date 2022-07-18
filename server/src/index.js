@@ -3,7 +3,7 @@ import cors from 'cors'
 import { verifyReCAPTCHA } from './recaptcha.js'
 
 const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-const secretKeyFake = process.env.RECAPTCHA_SECRET_KEY_FAKE;
+
 if (!secretKey) {
     console.error('No secret key provided');
     process.exit(1);
@@ -24,11 +24,6 @@ app.post('/login', async (req, res) => {
     console.log(`📢[index.js:23]: username: `, username)
     return executeReCAPTCHA(req, res, recaptcha, secretKey);
 
-})
-
-app.post('/login-bad-secret-key', async (req, res) => {
-    const recaptcha = req.body.recaptcha
-    return executeReCAPTCHA(req, res, recaptcha, `${secretKeyFake}`);
 })
 
 const executeReCAPTCHA = async (req, res, recaptcha, reCAPTCHAsecretKey) => {
