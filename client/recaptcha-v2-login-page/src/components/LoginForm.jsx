@@ -14,7 +14,7 @@ const LoginForm = () => {
         setUsername(e.target.value);
     }
 
-    const submit = async (value, recaptchaToken, loginEndpoint = '/login') => {
+    const submit = async (value, recaptchaToken, loginEndpoint = 'login') => {
         if (!isUserNameValid(value)) {
             alert('Username is not valid');
             return;
@@ -30,8 +30,12 @@ const LoginForm = () => {
             })
 
 
+            if (res.status === 200) {
+                setIsVerified(data?.success);
+            } else if (res.status === 403) {
+                alert('something went wrong - unauthorized');   
+            }
             const data = await res.json();
-            setIsVerified(data?.success);
 
         } catch (e) {
             console.log(e);
@@ -39,12 +43,12 @@ const LoginForm = () => {
     }
 
     const handleSubmitFailedCaptchaToken = async() => {
-        const damagedReCAPTCHAToken = `${reCAPTCHA}nonvalidtoken`
+        const damagedReCAPTCHAToken = reCAPTCHA.replace(/[a-zA-Z]/g, 'j').replace(/[0-9]/g, 4);
         return submit(username, damagedReCAPTCHAToken);
     }
 
     const handleSubmitFailedCaptchaSecret = async() => {
-        return submit(username, reCAPTCHA, 'login-bad-token');
+        return submit(username, reCAPTCHA, 'login-bad-secret-key');
     }
 
     const handleSubmit = async (e) => {
@@ -76,8 +80,8 @@ const LoginForm = () => {
                     <input type="submit" value="Submit" />
                 </div>
             </form>
-            <button onClick={() => handleSubmitFailedCaptchaToken()}>Submit with failed reCAPTCHA</button>
-            <button onClick={() => handleSubmitFailedCaptchaSecret()}>Submit with wrong reCAPTCHA token</button>
+            <button onClick={() => handleSubmitFailedCaptchaToken()}>Submit with failed reCAPTCHA (client)</button>
+            <button onClick={() => handleSubmitFailedCaptchaSecret()}>Submit to wrong recpatcha secret</button>
             {isVerified !== undefined && (<h1>{isVerified ? 'Human :)' : 'Machine :('}</h1>)}
         </div>
       );

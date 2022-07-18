@@ -3,6 +3,7 @@ import cors from 'cors'
 import { verifyReCAPTCHA } from './recaptcha.js'
 
 const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+const secretKeyFake = process.env.RECAPTCHA_SECRET_KEY_FAKE;
 if (!secretKey) {
     console.error('No secret key provided');
     process.exit(1);
@@ -21,41 +22,16 @@ app.post('/login', async (req, res) => {
     const { recaptcha, username } = req.body
     console.log(`📢[index.js:22]: recaptcha: `, recaptcha)
     console.log(`📢[index.js:23]: username: `, username)
-    // if (!recaptcha) {
-    //     return res.status(403).json({ msg: 'Must supply ReCAPTCHA challenge' });
-    // }
-
-    // const verificationResult = await verifyReCAPTCHA(recaptcha);
-
-    // if (verificationResult.success) {
-    //     res.status(200).json(verificationResult);
-    // } else {
-    //     res.status(403).json({ msg: 'Failed Captcha' });
-    // }
-    return executeReCAPTCHA(req, res, secretKey);
+    return executeReCAPTCHA(req, res, recaptcha, secretKey);
 
 })
 
-app.post('/login-bad-token', async (req, res) => {
-    // const recaptcha = req.body.recaptcha
-    // if (!recaptcha) {
-    //     return res.status(403).json({ msg: 'Must supply ReCAPTCHA challenge' });
-    // }
-
-    // const verificationResult = await verifyReCAPTCHA(recaptcha);
-
-    // if (verificationResult.success) {
-    //     res.status(200).json(verificationResult);
-    // } else {
-    //     res.status(403).json({ msg: 'Failed Captcha' });
-    // }
-    return executeReCAPTCHA(req, res, `${secretKey}-bad-token`);
-
-})
-
-const executeReCAPTCHA = async (req, res, reCAPTCHAsecretKey) => {
-    console.log(`📢[index.js:57]: reCAPTCHAsecretKey: `, reCAPTCHAsecretKey)
+app.post('/login-bad-secret-key', async (req, res) => {
     const recaptcha = req.body.recaptcha
+    return executeReCAPTCHA(req, res, recaptcha, `${secretKeyFake}`);
+})
+
+const executeReCAPTCHA = async (req, res, recaptcha, reCAPTCHAsecretKey) => {
     if (!recaptcha) {
         return res.status(403).json({ msg: 'Must supply ReCAPTCHA challenge' });
     }
